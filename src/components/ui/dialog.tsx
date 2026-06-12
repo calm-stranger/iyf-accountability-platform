@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -47,6 +48,11 @@ const DialogContent = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
   const { open, onOpenChange } = React.useContext(DialogContext)
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   React.useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -64,13 +70,13 @@ const DialogContent = React.forwardRef<
     }
   }, [open, onOpenChange])
 
-  if (!open) return null
+  if (!open || !mounted) return null
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-2 sm:items-center sm:p-4">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
       />
       {/* Content */}
@@ -79,7 +85,7 @@ const DialogContent = React.forwardRef<
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative z-50 w-full max-w-lg rounded-xl border bg-background p-6 shadow-xl mx-4",
+          "relative z-50 w-full max-w-lg rounded-2xl border border-border/60 bg-background p-4 shadow-[0_10px_40px_hsl(35_22%_50%/0.12)] animate-fade-in-up sm:my-auto sm:p-6",
           className
         )}
         {...props}
@@ -93,7 +99,8 @@ const DialogContent = React.forwardRef<
           <span className="sr-only">Close</span>
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 })
 DialogContent.displayName = "DialogContent"

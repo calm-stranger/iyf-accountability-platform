@@ -108,7 +108,7 @@ export default function ChallengeReportPage() {
     const base = "text-sm"
 
     if (field.type === 'yesno') return (
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {['Yes', 'No'].map(opt => (
           <button key={opt} type="button"
             onClick={() => setAnswer(field.id, opt)}
@@ -121,12 +121,12 @@ export default function ChallengeReportPage() {
     )
 
     if (field.type === 'mcq' && field.options) return (
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {field.options.map(opt => (
           <button key={opt} type="button"
             onClick={() => setAnswer(field.id, opt)}
             disabled={!!todayReport}
-            className={`py-2 px-3 rounded-lg border text-sm text-left transition-all ${value === opt ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-primary/40'}`}>
+            className={`break-words py-2 px-3 rounded-lg border text-sm text-left transition-all ${value === opt ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-primary/40'}`}>
             {value === opt ? '◉' : '○'} {opt}
           </button>
         ))}
@@ -171,13 +171,13 @@ export default function ChallengeReportPage() {
   })
 
   return (
-    <div className="space-y-5 max-w-lg mx-auto">
-      <div className="flex items-center gap-3">
+    <div className="space-y-5 max-w-lg mx-auto animate-fade-in-up">
+      <div className="flex items-start gap-2 sm:gap-3">
         <Link href="/my-challenges">
           <Button variant="ghost" size="icon" className="h-8 w-8"><ArrowLeft size={16} /></Button>
         </Link>
-        <div>
-          <h1 className="text-xl font-bold text-foreground">{challenge.title}</h1>
+        <div className="min-w-0">
+          <h1 className="break-words text-xl font-bold text-foreground">{challenge.title}</h1>
           <p className="text-xs text-muted-foreground">{challenge.description}</p>
         </div>
       </div>
@@ -185,9 +185,9 @@ export default function ChallengeReportPage() {
       {/* Streak + calendar */}
       <Card>
         <CardContent className="pt-4 pb-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-3">
             <span className="text-sm font-medium text-foreground">Last 7 Days</span>
-            <span className="text-orange-500 font-bold flex items-center gap-1 text-sm">
+            <span className="text-accent font-bold flex items-center gap-1 text-sm">
               <Flame size={14} /> {streak} day streak
             </span>
           </div>
@@ -213,7 +213,7 @@ export default function ChallengeReportPage() {
       {/* Report form */}
       <Card>
         <CardHeader className="pb-2 pt-4">
-          <CardTitle className="text-base flex items-center justify-between">
+          <CardTitle className="text-base flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             Today&lsquo;s Report
             {todayReport && (
               <Badge className="bg-green-50 text-green-700 border-green-200 gap-1 text-[10px]">

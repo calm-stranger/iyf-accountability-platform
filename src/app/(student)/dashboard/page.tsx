@@ -8,11 +8,9 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Flame, Trophy, BookOpen, CheckCircle2, Clock, Quote } from 'lucide-react'
 
-import { useSearchParams } from 'next/navigation'
 import PinSetupModal from '@/components/pin-setup-modal'
 
 export default function StudentDashboard() {
-  const searchParams = useSearchParams()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [activeChallenges, setActiveChallenges] = useState<ChallengeParticipant[]>([])
   const [todayReports, setTodayReports] = useState<string[]>([])
@@ -22,6 +20,7 @@ export default function StudentDashboard() {
   const [showPinSetup, setShowPinSetup] = useState(false)
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
     if (searchParams.get('setup_pin') === 'true') {
       setShowPinSetup(true)
     }
@@ -99,7 +98,7 @@ export default function StudentDashboard() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-up">
       {/* Greeting */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">
@@ -130,45 +129,45 @@ export default function StudentDashboard() {
       )}
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="text-center">
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-primary">{activeChallenges.length}</div>
-            <p className="text-xs text-muted-foreground mt-0.5 flex items-center justify-center gap-1">
-              <Trophy size={11} /> Active
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Card className="text-center shadow-sm hover:shadow-md transition-all">
+          <CardContent className="pt-5 pb-5">
+            <div className="text-3xl font-bold text-primary mb-1">{activeChallenges.length}</div>
+            <p className="text-xs text-muted-foreground mt-0.5 flex items-center justify-center gap-1 font-medium">
+              <Trophy size={12} /> Active
             </p>
           </CardContent>
         </Card>
-        <Card className="text-center">
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-orange-500 flex items-center justify-center gap-1">
-              {totalStreak}<Flame size={18} className="text-orange-400" />
+        <Card className="text-center shadow-sm hover:shadow-md transition-all">
+          <CardContent className="pt-5 pb-5">
+            <div className="text-3xl font-bold text-accent flex items-center justify-center gap-1 mb-1">
+              {totalStreak}<Flame size={20} className="text-accent/70" />
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">Streak Days</p>
+            <p className="text-xs text-muted-foreground mt-0.5 font-medium">Streak Days</p>
           </CardContent>
         </Card>
-        <Card className="text-center">
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-accent">{profile?.chanting_rounds || 0}</div>
-            <p className="text-xs text-muted-foreground mt-0.5">Rounds Daily</p>
+        <Card className="text-center shadow-sm hover:shadow-md transition-all">
+          <CardContent className="pt-5 pb-5">
+            <div className="text-3xl font-bold text-accent mb-1">{profile?.chanting_rounds || 0}</div>
+            <p className="text-xs text-muted-foreground mt-0.5 font-medium">Rounds Daily</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Today's pending submissions */}
       {pendingToday.length > 0 && (
-        <Card className="border-orange-200 bg-orange-50/50">
+        <Card className="border-accent/20 bg-accent/5 shadow-sm">
           <CardHeader className="pb-2 pt-4">
-            <CardTitle className="text-sm font-semibold text-orange-700 flex items-center gap-2">
+            <CardTitle className="text-sm font-semibold text-accent flex items-center gap-2">
               <Clock size={15} /> Today's Reports Pending ({pendingToday.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="pb-4 space-y-2">
             {pendingToday.map(p => (
-              <div key={p.id} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-orange-100">
+              <div key={p.id} className="flex items-center justify-between bg-white rounded-xl px-3 py-2 border border-accent/15 shadow-sm transition-all hover:shadow-md">
                 <span className="text-sm font-medium">{(p.challenges as any)?.title}</span>
                 <Link href={`/my-challenges/${p.challenge_id}`}>
-                  <Button size="sm" className="lotus-gradient text-white border-0 h-7 text-xs px-3">
+                  <Button size="sm" className="lotus-gradient text-white border-0 h-8 text-xs px-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-px transition-all">
                     Submit
                   </Button>
                 </Link>
@@ -219,7 +218,7 @@ export default function StudentDashboard() {
                               <CheckCircle2 size={10} /> Done today
                             </Badge>
                           ) : challenge?.status === 'active' ? (
-                            <Badge variant="secondary" className="text-orange-600 bg-orange-50 border-orange-200 text-[10px]">
+                            <Badge variant="secondary" className="text-accent bg-accent/10 border-accent/20 text-[10px]">
                               Pending
                             </Badge>
                           ) : null}
@@ -228,7 +227,7 @@ export default function StudentDashboard() {
                           {challenge?.description}
                         </p>
                         <div className="flex items-center gap-3 mt-2">
-                          <span className="text-xs text-orange-500 flex items-center gap-1">
+                          <span className="text-xs text-accent flex items-center gap-1">
                             <Flame size={11} /> {streak} day streak
                           </span>
                           <span className="text-xs text-muted-foreground">

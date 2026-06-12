@@ -54,7 +54,7 @@ export default function AdminSubmissionsPage() {
   )
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 animate-fade-in-up">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <FileText className="text-primary" size={22} />Submissions
@@ -96,7 +96,7 @@ export default function AdminSubmissionsPage() {
       ) : (
         <div className="space-y-2">
           {filtered.map(r => (
-            <Card key={r.id} className="hover:shadow-sm transition-shadow">
+            <Card key={r.id} className="hover:shadow-[0_10px_30px_hsl(35_22%_50%/0.12)] transition-all duration-300 border-border/60 hover:-translate-y-px">
               <CardContent className="pt-3 pb-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">

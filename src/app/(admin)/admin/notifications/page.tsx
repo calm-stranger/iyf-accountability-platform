@@ -51,7 +51,7 @@ export default function AdminNotificationsPage() {
   )
 
   return (
-    <div className="space-y-5 max-w-2xl">
+    <div className="space-y-5 max-w-2xl animate-fade-in-up">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function AdminNotificationsPage() {
       ) : (
         <div className="space-y-2">
           {notifications.map(n => (
-            <Card key={n.id} className={`transition-all ${!n.is_read ? 'border-primary/30 bg-primary/5' : ''}`}>
+            <Card key={n.id} className={`transition-all hover:shadow-[0_10px_30px_hsl(35_22%_50%/0.12)] hover:-translate-y-px ${!n.is_read ? 'border-primary/30 bg-primary/5' : ''}`}>
               <CardContent className="pt-3 pb-3">
                 <div className="flex gap-3 items-start">
                   <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${!n.is_read ? 'bg-primary/10' : 'bg-muted'}`}>

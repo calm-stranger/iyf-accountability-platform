@@ -7,13 +7,14 @@ import { Profile } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
-  LayoutDashboard, Trophy, BookOpen, User, Bell, Lock, Menu, X
+  LayoutDashboard, Trophy, BookOpen, User, Bell, Lock, Menu, X, MessageSquare
 } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/challenges', label: 'Challenges', icon: Trophy },
   { href: '/my-challenges', label: 'My Sadhana', icon: BookOpen },
+  { href: '/messages', label: 'Messages', icon: MessageSquare },
   { href: '/profile', label: 'Profile', icon: User },
 ]
 
@@ -52,7 +53,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
   return (
     <div className="min-h-screen calm-gradient">
       {/* Top navbar */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-border/50 shadow-sm">
+      <header className="sticky top-0 z-50 glass-navbar border-b border-border/40 shadow-sm transition-all duration-300">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
             <span className="text-xl">🪷</span>
@@ -66,16 +67,16 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href}>
-                <Button variant={pathname === href ? 'secondary' : 'ghost'}
-                  size="sm" className="gap-1.5 text-sm">
-                  <Icon size={15} />
+                <Button variant="ghost"
+                  size="sm" className={`gap-1.5 text-sm rounded-full transition-all duration-200 ${pathname === href ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground hover:bg-primary/5 hover:text-foreground'}`}>
+                  <Icon size={15} className={pathname === href ? 'text-primary' : ''} />
                   {label}
                 </Button>
               </Link>
             ))}
             <Link href="/notifications">
-              <Button variant={pathname === '/notifications' ? 'secondary' : 'ghost'} size="sm" className="gap-1.5 relative">
-                <Bell size={15} />
+              <Button variant="ghost" size="sm" className={`gap-1.5 relative rounded-full transition-all duration-200 ${pathname === '/notifications' ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground hover:bg-primary/5 hover:text-foreground'}`}>
+                <Bell size={15} className={pathname === '/notifications' ? 'text-primary' : ''} />
                 Notifications
                 {unread > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] flex items-center justify-center lotus-gradient text-white border-0">
@@ -87,9 +88,9 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
           </nav>
 
           <div className="flex items-center gap-2">
-            <span className="hidden md:block text-sm text-muted-foreground">
+            {/* <span className="hidden md:block text-sm text-muted-foreground">
               Hare Krishna, <span className="text-foreground font-medium">{profile?.full_name?.split(' ')[0]}</span>
-            </span>
+            </span> */}
             <Button variant="ghost" size="sm" onClick={handleLock} className="hidden md:flex gap-1.5">
               <Lock size={15} /> Lock App
             </Button>
@@ -106,15 +107,15 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
           <div className="md:hidden border-t border-border/50 bg-white/95 px-4 py-3 flex flex-col gap-1">
             {navItems.map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href} onClick={() => setMenuOpen(false)}>
-                <Button variant={pathname === href ? 'secondary' : 'ghost'}
-                  size="sm" className="w-full justify-start gap-2">
+                <Button variant="ghost"
+                  size="sm" className={`w-full justify-start gap-2 rounded-xl ${pathname === href ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground'}`}>
                   <Icon size={15} />{label}
                 </Button>
               </Link>
             ))}
             <Link href="/notifications" onClick={() => setMenuOpen(false)}>
-              <Button variant={pathname === '/notifications' ? 'secondary' : 'ghost'}
-                size="sm" className="w-full justify-start gap-2">
+              <Button variant="ghost"
+                size="sm" className={`w-full justify-start gap-2 rounded-xl ${pathname === '/notifications' ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground'}`}>
                 <Bell size={15} />Notifications
                 {unread > 0 && <Badge className="ml-auto lotus-gradient text-white border-0 text-[10px]">{unread}</Badge>}
               </Button>

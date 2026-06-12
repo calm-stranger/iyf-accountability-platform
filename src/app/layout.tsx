@@ -1,19 +1,22 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 
-const inter = Inter({ subsets: ['latin'] })
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+})
 
 export const metadata: Metadata = {
-  title: 'ISKCON Youth Forum — Sadhana Tracker',
-  description: 'A platform for youth to track their sadhana, join challenges, and grow spiritually.',
+  title: 'IYF Sadhana — ISKCON Youth Forum Guwahati',
+  description: 'A platform for youth to track their sadhana, join challenges, and grow spiritually together.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${jakarta.className} ${jakarta.variable}`}>
         {children}
         <Toaster />
       </body>

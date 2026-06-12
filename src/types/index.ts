@@ -16,6 +16,7 @@ export interface Profile {
   date_of_birth?: string;
   chanting_rounds?: number;
   avatar_url?: string;
+  pin_hash?: string;
   created_at: string;
   updated_at: string;
 }

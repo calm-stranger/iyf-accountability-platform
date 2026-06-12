@@ -95,7 +95,7 @@ export default function StudentChallengesPage() {
     }
     if (participation.status === 'pending') {
       return (
-        <Button variant="outline" className="w-full text-yellow-700 border-yellow-200 bg-yellow-50/50 hover:bg-yellow-50 pointer-events-none">
+        <Button variant="outline" className="w-full text-accent border-accent/20 bg-accent/5 hover:bg-accent/5 pointer-events-none">
           Awaiting Admin Approval
         </Button>
       )
@@ -117,7 +117,7 @@ export default function StudentChallengesPage() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-up">
       <div>
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
           <Trophy size={22} className="text-primary" /> Browse Challenges
@@ -141,17 +141,17 @@ export default function StudentChallengesPage() {
             const isJoining = joining === c.id
             
             return (
-              <Card key={c.id} className="hover:shadow-md transition-all cursor-pointer flex flex-col h-full active:scale-[0.98]" onClick={() => setSelectedChallenge(c)}>
+              <Card key={c.id} className="hover:shadow-[0_10px_30px_hsl(35_22%_50%/0.12)] transition-all duration-300 cursor-pointer flex flex-col h-full active:scale-[0.98] border-border/60 hover:-translate-y-1" onClick={() => setSelectedChallenge(c)}>
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start gap-2">
-                    <CardTitle className="text-lg leading-tight">{c.title}</CardTitle>
+                    <CardTitle className="min-w-0 break-words text-lg leading-tight">{c.title}</CardTitle>
                     {participation?.status === 'approved' && (
                       <Badge className="bg-green-50 text-green-700 border-green-200 shrink-0 text-[10px] gap-1">
                         <CheckCircle2 size={10} /> Joined
                       </Badge>
                     )}
                     {participation?.status === 'pending' && (
-                      <Badge className="bg-yellow-50 text-yellow-700 border-yellow-200 shrink-0 text-[10px] gap-1">
+                      <Badge className="bg-accent/10 text-accent border-accent/20 shrink-0 text-[10px] gap-1">
                         <Clock size={10} /> Pending
                       </Badge>
                     )}
@@ -167,7 +167,7 @@ export default function StudentChallengesPage() {
                   <div className="space-y-2 text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
                     <div className="flex items-center gap-2">
                       <Calendar size={13} className="text-primary/70 shrink-0" />
-                      <span>
+                      <span className="min-w-0 break-words">
                         {new Date(c.start_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} 
                         {' → '} 
                         {new Date(c.end_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
@@ -176,7 +176,7 @@ export default function StudentChallengesPage() {
                     {c.audience !== 'all' && (
                       <div className="flex items-center gap-2">
                         <Users size={13} className="text-primary/70 shrink-0" />
-                        <span>For: {c.audience}</span>
+                        <span className="min-w-0 break-words">For: {c.audience}</span>
                       </div>
                     )}
                   </div>
@@ -200,7 +200,7 @@ export default function StudentChallengesPage() {
 
       {/* Challenge Detail Dialog */}
       <Dialog open={!!selectedChallenge} onOpenChange={(open) => !open && setSelectedChallenge(null)}>
-        <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-h-[88vh] max-w-xl overflow-y-auto">
           <DialogHeader className="mb-4 pb-4 border-b">
             <DialogTitle className="text-xl text-primary mb-1 flex items-center justify-between gap-2">
               {selectedChallenge?.title}
@@ -212,8 +212,8 @@ export default function StudentChallengesPage() {
 
           {selectedChallenge && (
             <div className="space-y-5">
-              <div className="flex flex-wrap gap-3">
-                <div className="flex items-center gap-2 bg-muted/40 px-3 py-2 rounded-lg text-sm">
+              <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+                <div className="flex min-w-0 items-center gap-2 bg-muted/40 px-3 py-2 rounded-lg text-sm">
                   <Calendar size={15} className="text-primary/70" />
                   <span className="font-medium">
                     {new Date(selectedChallenge.start_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} 
@@ -222,9 +222,9 @@ export default function StudentChallengesPage() {
                   </span>
                 </div>
                 {selectedChallenge.audience !== 'all' && (
-                  <div className="flex items-center gap-2 bg-muted/40 px-3 py-2 rounded-lg text-sm">
+                <div className="flex min-w-0 items-center gap-2 bg-muted/40 px-3 py-2 rounded-lg text-sm">
                     <Users size={15} className="text-primary/70" />
-                    <span className="font-medium">{selectedChallenge.audience}</span>
+                    <span className="font-medium break-words">{selectedChallenge.audience}</span>
                   </div>
                 )}
               </div>

@@ -86,15 +86,15 @@ export default function PinSetupModal({ open, onClose, userId }: Props) {
           </div>
           <div className="grid grid-cols-3 gap-3">
             {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(d => (
-              <button key={d} onClick={() => handleDigit(d)} className="h-14 rounded-xl border border-border text-lg font-semibold hover:bg-muted active:scale-95 transition-all">
+              <button key={d} onClick={() => handleDigit(d)} className="h-14 rounded-xl border border-border text-lg font-semibold hover:bg-primary/5 hover:border-primary/30 hover:text-primary active:scale-95 transition-all">
                 {d}
               </button>
             ))}
             <div />
-            <button onClick={() => handleDigit('0')} className="h-14 rounded-xl border border-border text-lg font-semibold hover:bg-muted active:scale-95 transition-all">
+            <button onClick={() => handleDigit('0')} className="h-14 rounded-xl border border-border text-lg font-semibold hover:bg-primary/5 hover:border-primary/30 hover:text-primary active:scale-95 transition-all">
               0
             </button>
-            <button onClick={handleBackspace} className="h-14 rounded-xl border border-border flex items-center justify-center hover:bg-muted active:scale-95 transition-all">
+            <button onClick={handleBackspace} className="h-14 rounded-xl border border-border flex items-center justify-center hover:bg-destructive/5 hover:border-destructive/30 hover:text-destructive active:scale-95 transition-all text-muted-foreground">
               <Delete size={18} />
             </button>
           </div>

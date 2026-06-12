@@ -62,7 +62,7 @@ export default function AdminMessagesPage() {
         user_id: selected.id, type: 'feedback',
         title: 'New message from Admin 🪷',
         message: newMsg.slice(0, 80) + (newMsg.length > 80 ? '...' : ''),
-        link: '/notifications',
+        link: `/messages?admin=${adminId}`,
       })
       setMessages(prev => [...prev, data])
       setNewMsg('')
@@ -79,7 +79,7 @@ export default function AdminMessagesPage() {
   )
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in-up">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <MessageSquare className="text-primary" size={22} />Messages
@@ -87,7 +87,7 @@ export default function AdminMessagesPage() {
         <p className="text-sm text-muted-foreground mt-0.5">Send encouragement and feedback to students</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[600px]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[calc(100vh-12rem)] md:h-[600px]">
         {/* Student list */}
         <div className="md:col-span-1 flex flex-col gap-2 overflow-hidden">
           <div className="relative">

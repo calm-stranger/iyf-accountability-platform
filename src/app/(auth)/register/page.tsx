@@ -54,9 +54,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="w-full max-w-lg shadow-lg border-border/50 my-8">
-      <CardHeader className="text-center pb-2">
-        <div className="text-3xl mb-2">🪷</div>
+    <Card className="w-full max-w-lg border-border/60 bg-white/80 backdrop-blur-md shadow-[0_10px_40px_hsl(35_22%_50%/0.08)] my-8">
+      <CardHeader className="text-center pb-2 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-t-2xl -z-10" />
+        <div className="text-4xl mb-3 animate-float">🪷</div>
         <CardTitle className="text-2xl text-primary">Join the Journey</CardTitle>
         <CardDescription>Create your account — Hare Krishna!</CardDescription>
       </CardHeader>

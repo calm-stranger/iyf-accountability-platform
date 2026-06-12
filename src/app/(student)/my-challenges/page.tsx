@@ -65,7 +65,7 @@ export default function MyChallengesPage() {
   const past = participants.filter(p => (p.challenges as any)?.status !== 'active')
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 animate-fade-in-up">
       <div>
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
           <BookOpen className="text-primary" size={22} /> My Sadhana
@@ -93,20 +93,20 @@ export default function MyChallengesPage() {
                 const done = todayDone.includes(p.challenge_id)
                 const streak = streaks[p.challenge_id] || 0
                 return (
-                  <Card key={p.id} className="hover:shadow-md transition-shadow">
+                  <Card key={p.id} className="hover:shadow-[0_10px_30px_hsl(35_22%_50%/0.12)] transition-all duration-300 border-border/60 hover:-translate-y-1">
                     <CardContent className="pt-4 pb-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <h3 className="font-semibold text-sm">{c?.title}</h3>
                             {done
                               ? <Badge className="bg-green-50 text-green-700 border-green-200 text-[10px] gap-1"><CheckCircle2 size={10} />Done today</Badge>
-                              : <Badge className="bg-orange-50 text-orange-700 border-orange-200 text-[10px] gap-1"><Clock size={10} />Pending</Badge>
+                              : <Badge className="bg-accent/10 text-accent border-accent/20 text-[10px] gap-1"><Clock size={10} />Pending</Badge>
                             }
                           </div>
                           <p className="text-xs text-muted-foreground line-clamp-1">{c?.description}</p>
-                          <div className="flex items-center gap-4 mt-2">
-                            <span className="text-xs text-orange-500 flex items-center gap-1 font-medium">
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
+                            <span className="text-xs text-accent flex items-center gap-1 font-medium">
                               <Flame size={11} /> {streak} day streak
                             </span>
                             <span className="text-xs text-muted-foreground">
@@ -114,7 +114,7 @@ export default function MyChallengesPage() {
                             </span>
                           </div>
                         </div>
-                        <Link href={`/my-challenges/${p.challenge_id}`}>
+                        <Link href={`/my-challenges/${p.challenge_id}`} className="w-full sm:w-auto">
                           <Button size="sm" className={done ? '' : 'lotus-gradient text-white border-0'} variant={done ? 'outline' : 'default'}>
                             {done ? 'View' : 'Submit'}
                           </Button>
@@ -135,15 +135,15 @@ export default function MyChallengesPage() {
                 return (
                   <Card key={p.id} className="opacity-70">
                     <CardContent className="pt-4 pb-4">
-                      <div className="flex items-center justify-between">
-                        <div>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="min-w-0">
                           <h3 className="font-semibold text-sm">{c?.title}</h3>
                           <p className="text-xs text-muted-foreground mt-0.5">
                             Ended {new Date(c?.end_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                           </p>
                         </div>
-                        <Link href={`/my-challenges/${p.challenge_id}`}>
-                          <Button variant="outline" size="sm">View</Button>
+                        <Link href={`/my-challenges/${p.challenge_id}`} className="w-full sm:w-auto">
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto">View</Button>
                         </Link>
                       </div>
                     </CardContent>

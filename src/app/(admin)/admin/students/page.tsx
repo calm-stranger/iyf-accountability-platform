@@ -52,7 +52,7 @@ export default function StudentsPage() {
   )
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 animate-fade-in-up">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -79,7 +79,7 @@ export default function StudentsPage() {
       ) : (
         <div className="space-y-2">
           {filtered.map(s => (
-            <Card key={s.id} className="hover:shadow-md transition-shadow cursor-pointer"
+            <Card key={s.id} className="hover:shadow-[0_10px_30px_hsl(35_22%_50%/0.12)] transition-all duration-300 border-border/60 hover:-translate-y-1 cursor-pointer"
               onClick={() => router.push(`/admin/students/${s.id}`)}>
               <CardContent className="pt-3 pb-3">
                 <div className="flex items-center gap-3">

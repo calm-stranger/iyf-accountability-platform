@@ -11,7 +11,7 @@ import Link from 'next/link'
 function NotifIcon({ type }: { type: string }) {
   if (type === 'join_request') return <Trophy size={15} className="text-primary" />
   if (type === 'report_submitted') return <FileText size={15} className="text-accent" />
-  if (type === 'feedback') return <MessageSquare size={15} className="text-blue-500" />
+  if (type === 'feedback' || type === 'message') return <MessageSquare size={15} className="text-blue-500" />
   if (type === 'challenge_approved') return <Trophy size={15} className="text-green-500" />
   if (type === 'challenge_rejected') return <Trophy size={15} className="text-red-500" />
   if (type === 'new_challenge') return <Trophy size={15} className="text-primary" />
@@ -47,6 +47,12 @@ export default function NotificationsPage() {
   }
 
   const unread = notifications.filter(n => !n.is_read).length
+  const notificationLink = (n: Notification) => {
+    if ((n.type === 'feedback' || n.type === 'message') && (!n.link || n.link === '/notifications')) {
+      return '/messages'
+    }
+    return n.link
+  }
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
@@ -56,7 +62,7 @@ export default function NotificationsPage() {
   )
 
   return (
-    <div className="space-y-5 max-w-lg mx-auto">
+    <div className="space-y-5 max-w-2xl animate-fade-in-up mx-auto">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
@@ -83,7 +89,7 @@ export default function NotificationsPage() {
       ) : (
         <div className="space-y-2">
           {notifications.map(n => (
-            <Card key={n.id} className={`transition-all ${!n.is_read ? 'border-primary/30 bg-primary/5' : ''}`}>
+            <Card key={n.id} className={`transition-all hover:shadow-[0_10px_30px_hsl(35_22%_50%/0.12)] hover:-translate-y-px ${!n.is_read ? 'border-primary/30 bg-primary/5' : ''}`}>
               <CardContent className="pt-3 pb-3">
                 <div className="flex gap-3 items-start">
                   <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${!n.is_read ? 'bg-primary/10' : 'bg-muted'}`}>
@@ -104,9 +110,9 @@ export default function NotificationsPage() {
                     </p>
                   </div>
                 </div>
-                {n.link && (
+                {notificationLink(n) && (
                   <div className="mt-2 ml-11">
-                    <Link href={n.link}>
+                    <Link href={notificationLink(n) || '#'}>
                       <Button variant="ghost" size="sm" className="h-6 text-xs text-primary px-2">
                         View →
                       </Button>

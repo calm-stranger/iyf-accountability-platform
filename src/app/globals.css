@@ -1,65 +1,213 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: hsl(45 30% 97%);
-  --color-foreground: hsl(30 15% 15%);
-  --color-card: hsl(45 25% 99%);
-  --color-card-foreground: hsl(30 15% 15%);
-  --color-popover: hsl(45 25% 99%);
-  --color-popover-foreground: hsl(30 15% 15%);
-  --color-primary: hsl(25 65% 45%);
-  --color-primary-foreground: hsl(45 30% 97%);
-  --color-secondary: hsl(45 40% 92%);
-  --color-secondary-foreground: hsl(30 15% 25%);
-  --color-muted: hsl(45 20% 93%);
-  --color-muted-foreground: hsl(30 10% 45%);
-  --color-accent: hsl(160 35% 45%);
-  --color-accent-foreground: hsl(45 30% 97%);
-  --color-destructive: hsl(0 65% 50%);
-  --color-destructive-foreground: hsl(45 30% 97%);
-  --color-border: hsl(45 20% 87%);
-  --color-input: hsl(45 20% 87%);
-  --color-ring: hsl(25 65% 45%);
-  --radius: 0.6rem;
+  /* === Calm Garden Palette === */
+  --color-background: hsl(150 24% 97%);
+  --color-foreground: hsl(176 18% 18%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(176 18% 18%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(176 18% 18%);
+  --color-primary: hsl(168 34% 38%);
+  --color-primary-foreground: hsl(150 24% 98%);
+  --color-secondary: hsl(158 26% 92%);
+  --color-secondary-foreground: hsl(176 18% 22%);
+  --color-muted: hsl(156 20% 94%);
+  --color-muted-foreground: hsl(178 10% 43%);
+  --color-accent: hsl(224 26% 48%);
+  --color-accent-foreground: hsl(150 24% 98%);
+  --color-destructive: hsl(356 54% 52%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(164 18% 86%);
+  --color-input: hsl(164 18% 86%);
+  --color-ring: hsl(168 34% 38%);
+  --radius: 0.75rem;
 }
 
 :root {
-  --background: 45 30% 97%;
-  --foreground: 30 15% 15%;
-  --card: 45 25% 99%;
-  --card-foreground: 30 15% 15%;
-  --popover: 45 25% 99%;
-  --popover-foreground: 30 15% 15%;
-  --primary: 25 65% 45%;
-  --primary-foreground: 45 30% 97%;
-  --secondary: 45 40% 92%;
-  --secondary-foreground: 30 15% 25%;
-  --muted: 45 20% 93%;
-  --muted-foreground: 30 10% 45%;
-  --accent: 160 35% 45%;
-  --accent-foreground: 45 30% 97%;
-  --destructive: 0 65% 50%;
-  --destructive-foreground: 45 30% 97%;
-  --border: 45 20% 87%;
-  --input: 45 20% 87%;
-  --ring: 25 65% 45%;
-  --radius: 0.6rem;
+  --background: 150 24% 97%;
+  --foreground: 176 18% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 176 18% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 176 18% 18%;
+  --primary: 168 34% 38%;
+  --primary-foreground: 150 24% 98%;
+  --secondary: 158 26% 92%;
+  --secondary-foreground: 176 18% 22%;
+  --muted: 156 20% 94%;
+  --muted-foreground: 178 10% 43%;
+  --accent: 224 26% 48%;
+  --accent-foreground: 150 24% 98%;
+  --destructive: 356 54% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 164 18% 86%;
+  --input: 164 18% 86%;
+  --ring: 168 34% 38%;
+  --radius: 0.75rem;
 }
 
+/* === Base Styles === */
 * {
   border-color: hsl(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* === Gradient Utilities === */
 .lotus-gradient {
-  background: linear-gradient(135deg, hsl(25, 65%, 45%) 0%, hsl(35, 70%, 55%) 100%);
+  background: linear-gradient(135deg, hsl(168 34% 38%) 0%, hsl(190 28% 42%) 52%, hsl(224 26% 48%) 100%);
 }
 
 .calm-gradient {
-  background: linear-gradient(180deg, hsl(45, 30%, 97%) 0%, hsl(160, 20%, 94%) 100%);
+  background: linear-gradient(180deg, hsl(150 24% 98%) 0%, hsl(156 24% 95%) 48%, hsl(214 28% 96%) 100%);
+}
+
+.warm-glow {
+  background: radial-gradient(ellipse at center, hsl(168 34% 38% / 0.10) 0%, transparent 70%);
+}
+
+/* === Glassmorphism === */
+.glass-navbar {
+  background: hsl(150 24% 98% / 0.86);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* === Animations === */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes gentle-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-gentle-pulse {
+  animation: gentle-pulse 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Staggered children animation */
+.stagger-children>* {
+  opacity: 0;
+  animation: fade-in-up 0.4s ease-out forwards;
+}
+
+.stagger-children>*:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.stagger-children>*:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.stagger-children>*:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.stagger-children>*:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.stagger-children>*:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+.stagger-children>*:nth-child(6) {
+  animation-delay: 300ms;
+}
+
+.stagger-children>*:nth-child(7) {
+  animation-delay: 360ms;
+}
+
+.stagger-children>*:nth-child(8) {
+  animation-delay: 420ms;
+}
+
+/* === Custom Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(164 18% 78%);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(168 22% 66%);
+}
+
+/* === Selection === */
+::selection {
+  background: hsl(168 34% 38% / 0.16);
+  color: hsl(176 18% 18%);
 }

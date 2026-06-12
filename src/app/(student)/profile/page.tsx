@@ -90,7 +90,7 @@ export default function ProfilePage() {
   )
 
   return (
-    <div className="space-y-5 max-w-lg mx-auto">
+    <div className="space-y-6 max-w-xl mx-auto animate-fade-in-up">
       <div>
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
           <User className="text-primary" size={22} /> My Profile
@@ -99,8 +99,9 @@ export default function ProfilePage() {
       </div>
 
       {/* Avatar / name card */}
-      <Card className="border-primary/20 bg-primary/5">
-        <CardContent className="pt-4 pb-4">
+      <Card className="border-border/60 bg-white/80 backdrop-blur-md shadow-[0_10px_40px_hsl(35_22%_50%/0.08)] relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent -z-10" />
+        <CardContent className="pt-6 pb-6">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 rounded-full lotus-gradient flex items-center justify-center text-white text-xl font-bold shrink-0">
               {form.full_name?.charAt(0)?.toUpperCase() || '?'}

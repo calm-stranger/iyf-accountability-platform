@@ -183,8 +183,8 @@ export default function AdminChallengesPage() {
 
   const statusColor = (s: string) => {
     if (s === 'active') return 'bg-green-50 text-green-700 border-green-200'
-    if (s === 'draft') return 'bg-yellow-50 text-yellow-700 border-yellow-200'
-    if (s === 'completed') return 'bg-blue-50 text-blue-700 border-blue-200'
+    if (s === 'draft') return 'bg-secondary text-secondary-foreground border-border'
+    if (s === 'completed') return 'bg-accent/10 text-accent border-accent/20'
     return 'bg-gray-50 text-gray-600 border-gray-200'
   }
 
@@ -196,7 +196,7 @@ export default function AdminChallengesPage() {
   )
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 animate-fade-in-up">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -222,9 +222,9 @@ export default function AdminChallengesPage() {
       ) : (
         <div className="space-y-3">
           {challenges.map(c => (
-            <Card key={c.id} className="hover:shadow-md transition-shadow">
+            <Card key={c.id} className="hover:shadow-[0_10px_30px_hsl(35_22%_50%/0.12)] transition-all duration-300 border-border/60 hover:-translate-y-1">
               <CardContent className="pt-4 pb-4">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <h3 className="font-semibold">{c.title}</h3>
@@ -246,8 +246,8 @@ export default function AdminChallengesPage() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs"
+                  <div className="grid grid-cols-[1fr_auto_auto] items-center gap-1.5 shrink-0 w-full sm:flex sm:w-auto mt-2 sm:mt-0">
+                    <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs min-w-0"
                       onClick={() => openRequests(c)}>
                       <Users size={12} />Requests
                     </Button>
@@ -268,7 +268,7 @@ export default function AdminChallengesPage() {
 
       {/* Challenge Form Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto">
+        <DialogContent className="h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] max-w-none overflow-y-auto rounded-2xl p-4 sm:h-auto sm:max-h-[92vh] sm:w-full sm:max-w-3xl sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-primary">
               {editing ? 'Edit Challenge' : 'Create New Challenge'} 🏆
@@ -276,9 +276,9 @@ export default function AdminChallengesPage() {
           </DialogHeader>
 
           <Tabs defaultValue="details">
-            <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="details">Challenge Details</TabsTrigger>
-              <TabsTrigger value="form">Report Form Builder</TabsTrigger>
+            <TabsList className="w-full grid grid-cols-2 h-auto rounded-xl">
+              <TabsTrigger value="details" className="text-xs sm:text-sm py-2">Challenge Details</TabsTrigger>
+              <TabsTrigger value="form" className="text-xs sm:text-sm py-2">Report Form Builder</TabsTrigger>
             </TabsList>
 
             {/* Details tab */}
@@ -305,7 +305,7 @@ export default function AdminChallengesPage() {
                   value={form.criteria} onChange={e => set('criteria', e.target.value)}
                   rows={2} className="resize-none" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Start Date *</Label>
                   <Input type="date" value={form.start_date} onChange={e => set('start_date', e.target.value)} />
@@ -315,7 +315,7 @@ export default function AdminChallengesPage() {
                   <Input type="date" value={form.end_date} onChange={e => set('end_date', e.target.value)} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Audience</Label>
                   <Input placeholder="e.g. All, College Students, Working..."
@@ -338,12 +338,12 @@ export default function AdminChallengesPage() {
 
             {/* Form builder tab */}
             <TabsContent value="form" className="space-y-4 mt-4">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
                   <p className="text-sm font-medium">Daily Report Fields</p>
                   <p className="text-xs text-muted-foreground">These are what students fill in every day</p>
                 </div>
-                <Button size="sm" variant="outline" className="gap-1.5" onClick={addField}>
+                <Button size="sm" variant="outline" className="w-full gap-1.5 sm:w-auto" onClick={addField}>
                   <Plus size={13} />Add Field
                 </Button>
               </div>
@@ -360,16 +360,16 @@ export default function AdminChallengesPage() {
                   {fields.map((field, idx) => (
                     <Card key={field.id} className="border-border/70">
                       <CardContent className="pt-3 pb-3">
-                        <div className="flex items-start gap-2">
-                          <div className="text-muted-foreground mt-2 shrink-0 cursor-grab">
+                        <div className="flex items-start gap-2 min-w-0">
+                          <div className="hidden text-muted-foreground mt-2 shrink-0 cursor-grab sm:block">
                             <GripVertical size={15} />
                           </div>
                           <div className="flex-1 space-y-2.5">
-                            <div className="flex gap-2">
-                              <Input className="text-sm flex-1" placeholder={`Field ${idx + 1} label...`}
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <Input className="text-sm flex-1 w-full" placeholder={`Field ${idx + 1} label...`}
                                 value={field.label} onChange={e => updateField(field.id, 'label', e.target.value)} />
                               <Select value={field.type} onValueChange={v => updateField(field.id, 'type', v)}>
-                                <SelectTrigger className="w-44 text-sm"><SelectValue /></SelectTrigger>
+                                <SelectTrigger className="w-full sm:w-44 text-sm"><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                   {FIELD_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
                                 </SelectContent>
@@ -427,9 +427,9 @@ export default function AdminChallengesPage() {
                         </div>
                       )}
                       {(f.type === 'mcq') && (
-                        <div className="grid grid-cols-2 gap-1.5">
+                        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                           {(f.options || ['Option 1', 'Option 2']).map(o => (
-                            <div key={o} className="py-1.5 px-2 rounded border border-border text-xs text-muted-foreground">○ {o}</div>
+                            <div key={o} className="break-words py-1.5 px-2 rounded border border-border text-xs text-muted-foreground">○ {o}</div>
                           ))}
                         </div>
                       )}
@@ -449,7 +449,7 @@ export default function AdminChallengesPage() {
             </TabsContent>
           </Tabs>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:gap-3">
             <Button variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancel</Button>
             <Button className="flex-1 lotus-gradient text-white border-0" onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : editing ? 'Update Challenge' : 'Create Challenge 🙏'}
@@ -460,7 +460,7 @@ export default function AdminChallengesPage() {
 
       {/* Requests Dialog */}
       <Dialog open={!!requestsChallenge} onOpenChange={() => setRequestsChallenge(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Join Requests — {requestsChallenge?.title}</DialogTitle>
           </DialogHeader>
@@ -470,20 +470,22 @@ export default function AdminChallengesPage() {
               : requests.map(r => (
                 <Card key={r.id} className="border-border/70">
                   <CardContent className="pt-3 pb-3">
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex flex-col gap-3 mb-2 sm:flex-row sm:items-center">
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
                       <div className="h-9 w-9 rounded-full lotus-gradient flex items-center justify-center text-white font-bold shrink-0 text-sm">
                         {(r.profiles as any)?.full_name?.charAt(0)}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm">{(r.profiles as any)?.full_name}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-sm truncate">{(r.profiles as any)?.full_name}</p>
                         <p className="text-xs text-muted-foreground">
                           {(r.profiles as any)?.occupation} ·{' '}
                           {(r.profiles as any)?.phone || 'No phone'}
                         </p>
                       </div>
+                      </div>
                       <Badge className={
                         r.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
-                          r.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                          r.status === 'pending' ? 'bg-accent/10 text-accent border-accent/20' :
                             'bg-red-50 text-red-700 border-red-200'
                       }>{r.status}</Badge>
                     </div>
@@ -492,7 +494,7 @@ export default function AdminChallengesPage() {
                         <Input className="text-xs h-8" placeholder="Optional message to student..."
                           value={adminMsgs[r.id] || ''}
                           onChange={e => setAdminMsgs(prev => ({ ...prev, [r.id]: e.target.value }))} />
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row">
                           <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white border-0 h-8 gap-1.5 text-xs"
                             onClick={() => handleRequest(r.id, r.user_id, 'approved')}>
                             <CheckCircle2 size={12} />Approve

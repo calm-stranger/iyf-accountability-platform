@@ -10,11 +10,9 @@ import {
   TrendingUp, AlertCircle, CheckCircle2, Quote
 } from 'lucide-react'
 
-import { useSearchParams } from 'next/navigation'
 import PinSetupModal from '@/components/pin-setup-modal'
 
 export default function AdminDashboard() {
-  const searchParams = useSearchParams()
   const [stats, setStats] = useState({
     totalStudents: 0, activeChallenges: 0,
     todaySubmissions: 0, pendingRequests: 0,
@@ -29,6 +27,7 @@ export default function AdminDashboard() {
   const [showPinSetup, setShowPinSetup] = useState(false)
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
     if (searchParams.get('setup_pin') === 'true') {
       setShowPinSetup(true)
     }
@@ -112,7 +111,7 @@ export default function AdminDashboard() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-up">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Admin Dashboard 🪷</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
@@ -123,20 +122,20 @@ export default function AdminDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Total Students', value: stats.totalStudents, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Total Students', value: stats.totalStudents, icon: Users, color: 'text-accent', bg: 'bg-accent/10' },
           { label: 'Active Challenges', value: stats.activeChallenges, icon: Trophy, color: 'text-primary', bg: 'bg-primary/10' },
           { label: "Today's Reports", value: stats.todaySubmissions, icon: FileText, color: 'text-green-600', bg: 'bg-green-50' },
-          { label: 'Pending Requests', value: stats.pendingRequests, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-50' },
+          { label: 'Pending Requests', value: stats.pendingRequests, icon: Clock, color: 'text-accent', bg: 'bg-accent/10' },
         ].map(({ label, value, icon: Icon, color, bg }) => (
-          <Card key={label}>
+          <Card key={label} className="shadow-sm hover:shadow-md transition-all">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-3">
-                <div className={`h-9 w-9 rounded-lg ${bg} flex items-center justify-center shrink-0`}>
-                  <Icon size={17} className={color} />
+                <div className={`h-11 w-11 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+                  <Icon size={19} className={color} />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground">{value}</p>
-                  <p className="text-xs text-muted-foreground leading-tight">{label}</p>
+                  <p className="text-xs text-muted-foreground leading-tight font-medium mt-0.5">{label}</p>
                 </div>
               </div>
             </CardContent>
@@ -149,7 +148,7 @@ export default function AdminDashboard() {
         <Card className="lg:col-span-1">
           <CardHeader className="pb-2 pt-4">
             <CardTitle className="text-sm font-semibold flex items-center justify-between">
-              <span className="flex items-center gap-2"><Clock size={14} className="text-orange-500" />Pending Requests</span>
+              <span className="flex items-center gap-2"><Clock size={14} className="text-accent" />Pending Requests</span>
               <Link href="/admin/challenges"><Button variant="ghost" size="sm" className="text-xs h-6 px-2">View all</Button></Link>
             </CardTitle>
           </CardHeader>
@@ -165,7 +164,7 @@ export default function AdminDashboard() {
                     <p className="text-xs font-medium truncate">{r.profiles?.full_name}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{r.challenges?.title}</p>
                   </div>
-                  <Badge className="bg-orange-50 text-orange-700 border-orange-200 text-[9px]">Pending</Badge>
+                  <Badge className="bg-accent/10 text-accent border-accent/20 text-[9px]">Pending</Badge>
                 </div>
               ))
             }
@@ -203,15 +202,15 @@ export default function AdminDashboard() {
         <div className="space-y-4">
           {/* Inactive students */}
           {inactiveStudents.length > 0 && (
-            <Card className="border-orange-200">
+            <Card className="border-accent/20">
               <CardHeader className="pb-2 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <AlertCircle size={14} className="text-orange-500" />Not Submitting (3d+)
+                  <AlertCircle size={14} className="text-accent" />Not Submitting (3d+)
                 </CardTitle>
               </CardHeader>
               <CardContent className="pb-4 space-y-2">
                 {inactiveStudents.map((s: any) => (
-                  <div key={s.user_id} className="flex items-center justify-between p-2 bg-orange-50 rounded-lg">
+                  <div key={s.user_id} className="flex items-center justify-between p-2 bg-accent/5 rounded-lg">
                     <p className="text-xs font-medium">{s.full_name}</p>
                     <Link href={`/admin/students/${s.user_id}`}>
                       <Button variant="ghost" size="sm" className="h-6 text-xs px-2 text-primary">Message</Button>

@@ -60,7 +60,7 @@ export default function StudentDetailPage() {
         user_id: profile.id, type: 'feedback',
         title: 'New message from Admin',
         message: message.slice(0, 80) + (message.length > 80 ? '...' : ''),
-        link: '/notifications',
+        link: `/messages?admin=${adminId}`,
       })
       toast({ title: 'Message sent! 🙏' })
       setMessage('')
@@ -80,7 +80,7 @@ export default function StudentDetailPage() {
   const totalReports = reports.length
 
   return (
-    <div className="space-y-5 max-w-2xl">
+    <div className="space-y-5 max-w-2xl animate-fade-in-up">
       <div className="flex items-center gap-3">
         <Link href="/admin/students">
           <Button variant="ghost" size="icon" className="h-8 w-8"><ArrowLeft size={16} /></Button>
@@ -151,7 +151,7 @@ export default function StudentDetailPage() {
         </Card>
         <Card className="text-center">
           <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-orange-500 flex items-center justify-center gap-1">
+            <div className="text-2xl font-bold text-accent flex items-center justify-center gap-1">
               {(() => {
                 let streak = 0
                 const sorted = [...reports].sort((a, b) => b.report_date.localeCompare(a.report_date))
@@ -163,7 +163,7 @@ export default function StudentDetailPage() {
                 }
                 return streak
               })()}
-              <Flame size={16} className="text-orange-400" />
+              <Flame size={16} className="text-accent/70" />
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">Streak</p>
           </CardContent>
@@ -190,7 +190,7 @@ export default function StudentDetailPage() {
                 </div>
                 <Badge className={
                   c.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
-                  c.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                  c.status === 'pending' ? 'bg-accent/10 text-accent border-accent/20' :
                   'bg-red-50 text-red-700 border-red-200'
                 }>
                   {c.status}
