@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Challenge, DailyReport, FormField } from '@/types'
+import { Challenge, DailyReport, FormField, Message } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
-import { Flame, CheckCircle2, Calendar, ArrowLeft } from 'lucide-react'
+import { Flame, CheckCircle2, Calendar, ArrowLeft, MessageSquare, Send, History } from 'lucide-react'
 import Link from 'next/link'
 
 export default function ChallengeReportPage() {
@@ -20,8 +20,11 @@ export default function ChallengeReportPage() {
   const [todayReport, setTodayReport] = useState<DailyReport | null>(null)
   const [recentReports, setRecentReports] = useState<DailyReport[]>([])
   const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [guidanceMessages, setGuidanceMessages] = useState<Message[]>([])
+  const [reply, setReply] = useState('')
   const [streak, setStreak] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  const [sendingReply, setSendingReply] = useState(false)
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState('')
 
@@ -33,14 +36,18 @@ export default function ChallengeReportPage() {
       setUserId(user.id)
       const today = new Date().toISOString().split('T')[0]
 
-      const [{ data: ch }, { data: reports }] = await Promise.all([
+      const [{ data: ch }, { data: reports }, { data: msgs }] = await Promise.all([
         supabase.from('challenges').select('*').eq('id', id).single(),
         supabase.from('daily_reports').select('*').eq('challenge_id', id)
           .eq('user_id', user.id).order('report_date', { ascending: false }).limit(14),
+        supabase.from('messages').select('*').eq('challenge_id', id)
+          .or(`from_id.eq.${user.id},to_id.eq.${user.id}`)
+          .order('created_at', { ascending: true }),
       ])
 
       setChallenge(ch)
       setRecentReports(reports || [])
+      setGuidanceMessages(msgs || [])
       const todayRep = (reports || []).find((r: DailyReport) => r.report_date === today)
       setTodayReport(todayRep || null)
       if (todayRep) setAnswers(todayRep.answers as Record<string, string>)
@@ -85,22 +92,47 @@ export default function ChallengeReportPage() {
     if (error) {
       toast({ title: 'Submission failed', description: error.message, variant: 'destructive' })
     } else {
-      // Notify admin
-      const { data: admins } = await supabase.from('profiles').select('id').eq('role', 'admin')
-      if (admins) {
-        await supabase.from('notifications').insert(
-          admins.map((a: any) => ({
-            user_id: a.id, type: 'report_submitted',
-            title: 'New Report Submitted',
-            message: `A student submitted their report for "${challenge.title}"`,
-            link: '/admin/submissions',
-          }))
-        )
-      }
+      await supabase.from('notifications').insert({
+        user_id: challenge.created_by,
+        type: 'report_submitted',
+        title: 'New report submitted',
+        message: `A student submitted their report for "${challenge.title}".`,
+        link: '/admin/submissions',
+      })
       toast({ title: 'Submitted! 🙏', description: 'Your report has been recorded.' })
-      setTodayReport({ id: '', challenge_id: challenge.id, user_id: userId, answers, submitted_at: new Date().toISOString(), report_date: today })
+      const nextReport = { id: '', challenge_id: challenge.id, user_id: userId, answers, submitted_at: new Date().toISOString(), report_date: today }
+      setTodayReport(nextReport)
+      setRecentReports(prev => [nextReport, ...prev.filter(r => r.report_date !== today)].slice(0, 14))
     }
     setSubmitting(false)
+  }
+
+  async function sendReply() {
+    if (!challenge || !reply.trim()) return
+    setSendingReply(true)
+    const supabase = createClient()
+    const { data, error } = await supabase.from('messages').insert({
+      from_id: userId,
+      to_id: challenge.created_by,
+      challenge_id: challenge.id,
+      content: reply.trim(),
+    }).select().single()
+
+    if (error) {
+      toast({ title: 'Could not send reply', description: error.message, variant: 'destructive' })
+    } else if (data) {
+      await supabase.from('notifications').insert({
+        user_id: challenge.created_by,
+        type: 'message',
+        title: 'Student replied in a challenge',
+        message: reply.trim().slice(0, 90) + (reply.trim().length > 90 ? '...' : ''),
+        link: '/admin/submissions',
+      })
+      setGuidanceMessages(prev => [...prev, data])
+      setReply('')
+      toast({ title: 'Reply sent' })
+    }
+    setSendingReply(false)
   }
 
   function renderField(field: FormField) {
@@ -169,6 +201,14 @@ export default function ChallengeReportPage() {
     const d = new Date(); d.setDate(d.getDate() - (6 - i))
     return d.toISOString().split('T')[0]
   })
+  const previousReports = recentReports.filter(r => r.report_date !== today)
+  const formatAnswer = (value: string | number | undefined) => {
+    if (value === undefined || value === null || value === '') return <span className="text-muted-foreground italic">Not answered</span>
+    return String(value)
+  }
+  const messagesForDate = (reportDate: string) => guidanceMessages.filter(m =>
+    new Date(m.created_at).toISOString().split('T')[0] === reportDate
+  )
 
   return (
     <div className="space-y-5 max-w-lg mx-auto animate-fade-in-up">
@@ -256,6 +296,106 @@ export default function ChallengeReportPage() {
               )}
             </>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Past responses */}
+      <Card>
+        <CardHeader className="pb-2 pt-4">
+          <CardTitle className="text-base flex items-center gap-2">
+            <History size={15} className="text-primary" /> Past Responses
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 pb-5">
+          {previousReports.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">Your previous submissions will appear here.</p>
+          ) : previousReports.map(report => {
+            const dayMessages = messagesForDate(report.report_date)
+            return (
+              <div key={`${report.challenge_id}-${report.report_date}`} className="rounded-xl border border-border/70 bg-card/60 p-3 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-semibold">
+                    {new Date(report.report_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </p>
+                  <Badge variant="outline" className="text-[10px]">
+                    {new Date(report.submitted_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                  </Badge>
+                </div>
+                <div className="space-y-2">
+                  {challenge.form_fields.map(field => (
+                    <div key={field.id} className="rounded-lg bg-muted/30 px-3 py-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{field.label}</p>
+                      <p className="text-sm font-medium break-words">{formatAnswer(report.answers?.[field.id] as string | number | undefined)}</p>
+                    </div>
+                  ))}
+                </div>
+                {dayMessages.length > 0 && (
+                  <div className="space-y-2 border-t pt-3">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Feedback & replies that day</p>
+                    {dayMessages.map(m => {
+                      const isStudent = m.from_id === userId
+                      return (
+                        <div key={m.id} className={`rounded-lg px-3 py-2 text-sm ${isStudent ? 'bg-primary/10 text-foreground' : 'bg-accent/10 text-foreground'}`}>
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                            {isStudent ? 'You replied' : 'Admin feedback'}
+                          </p>
+                          <p className="whitespace-pre-wrap break-words">{m.content}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </CardContent>
+      </Card>
+
+      {/* Challenge guidance */}
+      <Card>
+        <CardHeader className="pb-2 pt-4">
+          <CardTitle className="text-base flex items-center gap-2">
+            <MessageSquare size={15} className="text-primary" /> Challenge Guidance
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 pb-5">
+          {guidanceMessages.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">Admin feedback and your replies for this challenge will appear here.</p>
+          ) : (
+            <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+              {guidanceMessages.map(m => {
+                const isStudent = m.from_id === userId
+                return (
+                  <div key={m.id} className={`flex ${isStudent ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm shadow-sm ${isStudent ? 'lotus-gradient text-white rounded-br-sm' : 'bg-muted text-foreground rounded-bl-sm border border-border/50'}`}>
+                      <p className="whitespace-pre-wrap break-words leading-relaxed">{m.content}</p>
+                      <p className={`text-[10px] mt-1 ${isStudent ? 'text-white/75' : 'text-muted-foreground'}`}>
+                        {new Date(m.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}, {new Date(m.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+          <div className="flex gap-2 items-end border-t pt-3">
+            <Textarea
+              className="min-h-[44px] max-h-32 flex-1 resize-none text-sm"
+              rows={1}
+              placeholder="Reply to admin feedback..."
+              value={reply}
+              onChange={e => setReply(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendReply() } }}
+            />
+            <Button
+              size="icon"
+              className="h-11 w-11 shrink-0 lotus-gradient text-white border-0"
+              onClick={sendReply}
+              disabled={sendingReply || !reply.trim()}
+            >
+              <Send size={15} />
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

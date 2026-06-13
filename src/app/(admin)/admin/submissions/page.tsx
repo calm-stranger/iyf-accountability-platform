@@ -3,13 +3,16 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { FileText, Search, Eye, Calendar } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
+import { FileText, Search, Eye, Calendar, Send } from 'lucide-react'
 
 export default function AdminSubmissionsPage() {
+  const { toast } = useToast()
   const [reports, setReports] = useState<any[]>([])
   const [challenges, setChallenges] = useState<any[]>([])
   const [filtered, setFiltered] = useState<any[]>([])
@@ -17,13 +20,18 @@ export default function AdminSubmissionsPage() {
   const [challengeFilter, setChallengeFilter] = useState('all')
   const [dateFilter, setDateFilter] = useState('')
   const [selected, setSelected] = useState<any>(null)
+  const [feedback, setFeedback] = useState('')
+  const [adminId, setAdminId] = useState('')
+  const [sendingFeedback, setSendingFeedback] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) setAdminId(user.id)
       const [{ data: reps }, { data: ch }] = await Promise.all([
-        supabase.from('daily_reports').select('*, profiles(full_name, phone), challenges(title, form_fields)')
+        supabase.from('daily_reports').select('*, profiles(full_name, phone), challenges(title, form_fields, created_by)')
           .order('submitted_at', { ascending: false }).limit(200),
         supabase.from('challenges').select('id, title').order('title'),
       ])
@@ -45,6 +53,39 @@ export default function AdminSubmissionsPage() {
     if (dateFilter) res = res.filter(r => r.report_date === dateFilter)
     setFiltered(res)
   }, [search, challengeFilter, dateFilter, reports])
+
+  function openReport(report: any) {
+    setSelected(report)
+    setFeedback('')
+  }
+
+  async function sendFeedback() {
+    if (!selected || !feedback.trim() || !adminId) return
+    setSendingFeedback(true)
+    const supabase = createClient()
+    const content = `Feedback on "${selected.challenges?.title}" (${new Date(selected.report_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}):\n\n${feedback.trim()}`
+    const { error } = await supabase.from('messages').insert({
+      from_id: adminId,
+      to_id: selected.user_id,
+      challenge_id: selected.challenge_id,
+      content,
+    })
+
+    if (error) {
+      toast({ title: 'Could not send feedback', description: error.message, variant: 'destructive' })
+    } else {
+      await supabase.from('notifications').insert({
+        user_id: selected.user_id,
+        type: 'feedback',
+        title: 'Admin replied to your submission',
+        message: feedback.trim().slice(0, 90) + (feedback.trim().length > 90 ? '...' : ''),
+        link: `/my-challenges/${selected.challenge_id}`,
+      })
+      toast({ title: 'Feedback sent' })
+      setFeedback('')
+    }
+    setSendingFeedback(false)
+  }
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
@@ -117,7 +158,7 @@ export default function AdminSubmissionsPage() {
                     </div>
                   </div>
                   <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0"
-                    onClick={() => setSelected(r)}>
+                    onClick={() => openReport(r)}>
                     <Eye size={14} />
                   </Button>
                 </div>
@@ -129,7 +170,7 @@ export default function AdminSubmissionsPage() {
 
       {/* Report detail dialog */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-primary">Report Details</DialogTitle>
           </DialogHeader>
@@ -157,6 +198,22 @@ export default function AdminSubmissionsPage() {
                     </p>
                   </div>
                 ))}
+              </div>
+              <div className="space-y-2 border-t pt-4">
+                <p className="text-sm font-semibold text-foreground">Encourage this student</p>
+                <Textarea
+                  className="min-h-24 resize-none text-sm"
+                  placeholder="Write a short reply, encouragement, or practical guidance..."
+                  value={feedback}
+                  onChange={e => setFeedback(e.target.value)}
+                />
+                <Button
+                  className="w-full lotus-gradient text-white border-0 gap-2"
+                  onClick={sendFeedback}
+                  disabled={sendingFeedback || !feedback.trim()}
+                >
+                  <Send size={14} />{sendingFeedback ? 'Sending...' : 'Send Feedback'}
+                </Button>
               </div>
             </div>
           )}

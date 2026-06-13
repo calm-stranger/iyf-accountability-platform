@@ -52,6 +52,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push('/login')
   }
 
+  const showAdminName = adminName && adminName.toLowerCase() !== 'admin'
+
   return (
     <div className="min-h-screen calm-gradient">
       <header className="sticky top-0 z-50 glass-navbar border-b border-border/40 shadow-sm transition-all duration-300">
@@ -88,8 +90,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <div className="flex items-center gap-2">
             <span className="hidden md:block text-sm text-muted-foreground">
-              <span className="text-foreground font-medium">{adminName}</span>
-              <Badge className="ml-2 text-[10px] lotus-gradient text-white border-0">Admin</Badge>
+              {showAdminName && <span className="text-foreground font-medium">{adminName}</span>}
+              <Badge className={showAdminName ? "ml-2 text-[10px] lotus-gradient text-white border-0" : "text-[10px] lotus-gradient text-white border-0"}>Admin</Badge>
             </span>
             <Button variant="outline" size="sm" onClick={handleSignOut} className="hidden md:flex gap-1.5 h-8 border-border/70 bg-white/60">
               <LogOut size={14} /> Sign Out
@@ -118,7 +120,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
             <div className="pt-2 border-t flex justify-between items-center gap-3">
               <span className="min-w-0 text-sm font-medium">
-                <span className="truncate">{adminName || 'Admin'}</span>{' '}
+                {showAdminName && <><span className="truncate">{adminName}</span>{' '}</>}
                 <Badge className="lotus-gradient text-white border-0 text-[10px]">Admin</Badge>
               </span>
               <Button variant="outline" size="sm" onClick={handleSignOut} className="shrink-0 gap-1.5">

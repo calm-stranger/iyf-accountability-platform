@@ -46,6 +46,7 @@ export default function AdminMessagesPage() {
     const { data } = await supabase.from('messages')
       .select('*, from_profile:from_id(full_name), to_profile:to_id(full_name)')
       .or(`and(from_id.eq.${adminId},to_id.eq.${student.id}),and(from_id.eq.${student.id},to_id.eq.${adminId})`)
+      .is('challenge_id', null)
       .order('created_at', { ascending: true })
     setMessages(data || [])
   }

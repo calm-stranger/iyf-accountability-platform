@@ -9,6 +9,8 @@ interface SelectContextType {
   onValueChange: (value: string) => void
   open: boolean
   setOpen: (open: boolean) => void
+  labels: Record<string, string>
+  registerLabel: (value: string, label: string) => void
 }
 
 const SelectContext = React.createContext<SelectContextType>({
@@ -16,6 +18,8 @@ const SelectContext = React.createContext<SelectContextType>({
   onValueChange: () => {},
   open: false,
   setOpen: () => {},
+  labels: {},
+  registerLabel: () => {},
 })
 
 interface SelectProps {
@@ -30,6 +34,7 @@ interface SelectProps {
 function Select({ value, defaultValue = "", onValueChange, children }: SelectProps) {
   const [open, setOpen] = React.useState(false)
   const [internalValue, setInternalValue] = React.useState(defaultValue)
+  const [labels, setLabels] = React.useState<Record<string, string>>({})
 
   const isControlled = value !== undefined
   const currentValue = isControlled ? value : internalValue
@@ -40,8 +45,12 @@ function Select({ value, defaultValue = "", onValueChange, children }: SelectPro
     setOpen(false)
   }
 
+  const registerLabel = React.useCallback((itemValue: string, label: string) => {
+    setLabels(prev => prev[itemValue] === label ? prev : { ...prev, [itemValue]: label })
+  }, [])
+
   return (
-    <SelectContext.Provider value={{ value: currentValue, onValueChange: handleValueChange, open, setOpen }}>
+    <SelectContext.Provider value={{ value: currentValue, onValueChange: handleValueChange, open, setOpen, labels, registerLabel }}>
       <div className="relative">
         {children}
       </div>
@@ -78,19 +87,20 @@ const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
 SelectTrigger.displayName = "SelectTrigger"
 
 function SelectValue({ placeholder }: { placeholder?: string }) {
-  const { value } = React.useContext(SelectContext)
-  const [label, setLabel] = React.useState<string>("")
+  const { value, labels } = React.useContext(SelectContext)
 
-  // We'll use a data attribute approach to find the label
   return (
     <span className="flex-1 text-left truncate">
-      {value ? <SelectValueInner value={value} placeholder={placeholder} onLabel={setLabel} /> : (placeholder || "")}
+      {value ? (labels[value] || value) : (placeholder || "")}
     </span>
   )
 }
 
-function SelectValueInner({ value, placeholder, onLabel }: { value: string; placeholder?: string; onLabel?: (label: string) => void }) {
-  return <span>{value || placeholder}</span>
+function childrenToText(children: React.ReactNode): string {
+  if (typeof children === "string" || typeof children === "number") return String(children)
+  if (Array.isArray(children)) return children.map(childrenToText).join("")
+  if (React.isValidElement<{ children?: React.ReactNode }>(children)) return childrenToText(children.props.children)
+  return ""
 }
 
 interface SelectContentProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -113,7 +123,9 @@ function SelectContent({ className, children, ...props }: SelectContentProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [open, setOpen])
 
-  if (!open) return null
+  if (!open) {
+    return <div className="hidden">{children}</div>
+  }
 
   return (
     <div
@@ -137,8 +149,12 @@ interface SelectItemProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 function SelectItem({ className, value, children, ...props }: SelectItemProps) {
-  const { value: selectedValue, onValueChange } = React.useContext(SelectContext)
+  const { value: selectedValue, onValueChange, registerLabel } = React.useContext(SelectContext)
   const isSelected = selectedValue === value
+
+  React.useEffect(() => {
+    registerLabel(value, childrenToText(children))
+  }, [children, registerLabel, value])
 
   return (
     <div

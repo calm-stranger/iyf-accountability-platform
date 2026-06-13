@@ -45,9 +45,10 @@ export default function StudentChallengesPage() {
     load()
   }, [])
 
-  async function handleJoin(challengeId: string, e?: React.MouseEvent) {
+  async function handleJoin(challenge: Challenge, e?: React.MouseEvent) {
     if (e) e.stopPropagation()
     if (!profile) return
+    const challengeId = challenge.id
     setJoining(challengeId)
     
     const supabase = createClient()
@@ -67,6 +68,13 @@ export default function StudentChallengesPage() {
     if (error) {
       toast({ title: 'Failed to join', description: error.message, variant: 'destructive' })
     } else if (data) {
+      await supabase.from('notifications').insert({
+        user_id: challenge.created_by,
+        type: 'join_request',
+        title: 'New challenge join request',
+        message: `${profile.full_name} requested to join "${challenge.title}".`,
+        link: '/admin/challenges',
+      })
       toast({ title: 'Request Sent! 🙏', description: 'Your request to join has been sent to the admin.' })
       setParticipations(prev => ({ ...prev, [challengeId]: data }))
     }
@@ -78,7 +86,7 @@ export default function StudentChallengesPage() {
     if (!participation) {
       return (
         <Button 
-          onClick={(e) => handleJoin(c.id, e)} 
+          onClick={(e) => handleJoin(c, e)} 
           disabled={isJoining}
           className="w-full lotus-gradient text-white border-0"
         >

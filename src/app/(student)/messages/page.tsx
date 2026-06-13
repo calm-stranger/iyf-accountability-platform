@@ -34,6 +34,7 @@ export default function StudentMessagesPage() {
         supabase.from('messages')
         .select('*')
         .or(`from_id.eq.${user.id},to_id.eq.${user.id}`)
+        .is('challenge_id', null)
         .order('created_at', { ascending: true }),
         supabase.from('profiles').select('id, full_name, role').eq('role', 'admin').order('full_name'),
       ])

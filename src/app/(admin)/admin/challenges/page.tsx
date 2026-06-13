@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import {
   Trophy, Plus, Pencil, Trash2, GripVertical, X,
-  CheckCircle2, Clock, XCircle, Eye, Users, Calendar
+  CheckCircle2, Clock, XCircle, Eye, Users, Calendar, Archive, RotateCcw
 } from 'lucide-react'
 
 const FIELD_TYPES = [
@@ -152,6 +152,17 @@ export default function AdminChallengesPage() {
     toast({ title: 'Challenge deleted.' })
   }
 
+  async function updateChallengeStatus(challenge: Challenge, status: ChallengeStatus) {
+    const supabase = createClient()
+    const { error } = await supabase.from('challenges').update({ status }).eq('id', challenge.id)
+    if (error) {
+      toast({ title: 'Could not update challenge', description: error.message, variant: 'destructive' })
+      return
+    }
+    setChallenges(prev => prev.map(c => c.id === challenge.id ? { ...c, status } : c))
+    toast({ title: status === 'active' ? 'Challenge activated' : 'Challenge archived' })
+  }
+
   async function handleRequest(participantId: string, userId: string, status: 'approved' | 'rejected') {
     const supabase = createClient()
     const msg = adminMsgs[participantId] || ''
@@ -246,11 +257,22 @@ export default function AdminChallengesPage() {
                       )}
                     </div>
                   </div>
-                  <div className="grid grid-cols-[1fr_auto_auto] items-center gap-1.5 shrink-0 w-full sm:flex sm:w-auto mt-2 sm:mt-0">
+                  <div className="grid grid-cols-2 items-center gap-1.5 shrink-0 w-full sm:flex sm:w-auto mt-2 sm:mt-0">
                     <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs min-w-0"
                       onClick={() => openRequests(c)}>
-                      <Users size={12} />Requests
+                      <Users size={12} />People
                     </Button>
+                    {c.status === 'active' ? (
+                      <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs"
+                        onClick={() => updateChallengeStatus(c, 'archived')}>
+                        <Archive size={12} />Archive
+                      </Button>
+                    ) : (
+                      <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs"
+                        onClick={() => updateChallengeStatus(c, 'active')}>
+                        <RotateCcw size={12} />Activate
+                      </Button>
+                    )}
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(c)}>
                       <Pencil size={14} />
                     </Button>
@@ -462,58 +484,87 @@ export default function AdminChallengesPage() {
       <Dialog open={!!requestsChallenge} onOpenChange={() => setRequestsChallenge(null)}>
         <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Join Requests — {requestsChallenge?.title}</DialogTitle>
+            <DialogTitle>{requestsChallenge?.title}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 mt-2">
+          <div className="space-y-4 mt-2">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-xl border bg-muted/30 p-3 text-center">
+                <p className="text-lg font-bold text-foreground">{requests.length}</p>
+                <p className="text-[10px] text-muted-foreground">Total</p>
+              </div>
+              <div className="rounded-xl border bg-accent/5 p-3 text-center">
+                <p className="text-lg font-bold text-accent">{requests.filter(r => r.status === 'pending').length}</p>
+                <p className="text-[10px] text-muted-foreground">Pending</p>
+              </div>
+              <div className="rounded-xl border bg-green-50 p-3 text-center">
+                <p className="text-lg font-bold text-green-700">{requests.filter(r => r.status === 'approved').length}</p>
+                <p className="text-[10px] text-muted-foreground">Approved</p>
+              </div>
+            </div>
             {requests.length === 0
-              ? <p className="text-sm text-muted-foreground text-center py-8">No requests yet.</p>
-              : requests.map(r => (
-                <Card key={r.id} className="border-border/70">
-                  <CardContent className="pt-3 pb-3">
-                    <div className="flex flex-col gap-3 mb-2 sm:flex-row sm:items-center">
-                      <div className="flex min-w-0 flex-1 items-center gap-3">
-                      <div className="h-9 w-9 rounded-full lotus-gradient flex items-center justify-center text-white font-bold shrink-0 text-sm">
-                        {(r.profiles as any)?.full_name?.charAt(0)}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-sm truncate">{(r.profiles as any)?.full_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {(r.profiles as any)?.occupation} ·{' '}
-                          {(r.profiles as any)?.phone || 'No phone'}
+              ? <p className="text-sm text-muted-foreground text-center py-8">No students have requested this challenge yet.</p>
+              : (
+                <div className="space-y-5">
+                  {(['pending', 'approved', 'rejected'] as const).map(status => {
+                    const group = requests.filter(r => r.status === status)
+                    if (group.length === 0) return null
+                    return (
+                      <div key={status} className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          {status === 'pending' ? 'Pending requests' : status === 'approved' ? 'Participants' : 'Not approved'}
                         </p>
+                        {group.map(r => (
+                          <Card key={r.id} className="border-border/70">
+                            <CardContent className="pt-3 pb-3">
+                              <div className="flex flex-col gap-3 mb-2 sm:flex-row sm:items-center">
+                                <div className="flex min-w-0 flex-1 items-center gap-3">
+                                  <div className="h-9 w-9 rounded-full lotus-gradient flex items-center justify-center text-white font-bold shrink-0 text-sm">
+                                    {(r.profiles as any)?.full_name?.charAt(0)}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="font-semibold text-sm truncate">{(r.profiles as any)?.full_name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {(r.profiles as any)?.occupation} ·{' '}
+                                      {(r.profiles as any)?.phone || 'No phone'}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Badge className={
+                                  r.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
+                                    r.status === 'pending' ? 'bg-accent/10 text-accent border-accent/20' :
+                                      'bg-red-50 text-red-700 border-red-200'
+                                }>{r.status}</Badge>
+                              </div>
+                              {r.status === 'pending' && (
+                                <div className="space-y-2 mt-2">
+                                  <Input className="text-xs h-8" placeholder="Optional message to student..."
+                                    value={adminMsgs[r.id] || ''}
+                                    onChange={e => setAdminMsgs(prev => ({ ...prev, [r.id]: e.target.value }))} />
+                                  <div className="flex flex-col gap-2 sm:flex-row">
+                                    <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white border-0 h-8 gap-1.5 text-xs"
+                                      onClick={() => handleRequest(r.id, r.user_id, 'approved')}>
+                                      <CheckCircle2 size={12} />Approve
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="flex-1 text-destructive border-destructive/30 h-8 gap-1.5 text-xs"
+                                      onClick={() => handleRequest(r.id, r.user_id, 'rejected')}>
+                                      <XCircle size={12} />Reject
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                              {r.admin_message && r.status !== 'pending' && (
+                                <p className="text-xs text-muted-foreground italic mt-1 bg-muted/50 rounded px-2 py-1">
+                                  "{r.admin_message}"
+                                </p>
+                              )}
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
-                      </div>
-                      <Badge className={
-                        r.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
-                          r.status === 'pending' ? 'bg-accent/10 text-accent border-accent/20' :
-                            'bg-red-50 text-red-700 border-red-200'
-                      }>{r.status}</Badge>
-                    </div>
-                    {r.status === 'pending' && (
-                      <div className="space-y-2 mt-2">
-                        <Input className="text-xs h-8" placeholder="Optional message to student..."
-                          value={adminMsgs[r.id] || ''}
-                          onChange={e => setAdminMsgs(prev => ({ ...prev, [r.id]: e.target.value }))} />
-                        <div className="flex flex-col gap-2 sm:flex-row">
-                          <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-white border-0 h-8 gap-1.5 text-xs"
-                            onClick={() => handleRequest(r.id, r.user_id, 'approved')}>
-                            <CheckCircle2 size={12} />Approve
-                          </Button>
-                          <Button size="sm" variant="outline" className="flex-1 text-destructive border-destructive/30 h-8 gap-1.5 text-xs"
-                            onClick={() => handleRequest(r.id, r.user_id, 'rejected')}>
-                            <XCircle size={12} />Reject
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                    {r.admin_message && r.status !== 'pending' && (
-                      <p className="text-xs text-muted-foreground italic mt-1 bg-muted/50 rounded px-2 py-1">
-                        "{r.admin_message}"
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))
+                    )
+                  })}
+                </div>
+              )
             }
           </div>
         </DialogContent>
