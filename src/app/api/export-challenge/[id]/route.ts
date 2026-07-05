@@ -35,7 +35,7 @@ export async function GET(
 
     // Extract all unique keys from reportData across all reports for dynamic headers
     const reportDataKeys = new Set<string>()
-    reports.forEach(report => {
+    reports.forEach((report: any) => {
       if (report.reportData && typeof report.reportData === 'object') {
         Object.keys(report.reportData).forEach(key => reportDataKeys.add(key))
       }
@@ -64,7 +64,7 @@ export async function GET(
     }
 
     // Build CSV Rows
-    const rows = reports.map(report => {
+    const rows = reports.map((report: any) => {
       const baseData = [
         report.id,
         report.user.name || "Unknown",
