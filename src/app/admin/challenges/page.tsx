@@ -76,7 +76,7 @@ export default async function AdminChallengesPage() {
           {challenges.length === 0 ? (
             <p className="text-stone-500 italic">No challenges created yet. Launch your first one!</p>
           ) : (
-            challenges.map((challenge) => (
+            challenges.map((challenge: any) => (
               <Card key={challenge.id} className="border-stone-200 shadow-sm bg-white">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">

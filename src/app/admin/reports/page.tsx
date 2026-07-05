@@ -25,7 +25,7 @@ export default async function AdminReportsPage({
       select: { user: true },
       distinct: ['userId']
     })
-    users = reportsForChallenge.map(r => r.user)
+    users = reportsForChallenge.map((r: any) => r.user)
   }
 
   // 3. Fetch reports based on selection
@@ -109,7 +109,7 @@ export default async function AdminReportsPage({
                   }}
                 >
                   <option value="">-- Choose a Challenge --</option>
-                  {challenges.map(c => (
+                  {challenges.map((c: any) => (
                     <option key={c.id} value={c.id}>{c.title}</option>
                   ))}
                 </select>
@@ -128,7 +128,7 @@ export default async function AdminReportsPage({
                   onChange={(e) => e.target.form?.submit()}
                 >
                   <option value="">-- All Students --</option>
-                  {users.map(u => (
+                  {users.map((u: any) => (
                     <option key={u.id} value={u.id}>{u.name || u.email}</option>
                   ))}
                 </select>
@@ -150,7 +150,7 @@ export default async function AdminReportsPage({
                   <tr>
                     <th className="px-4 py-3 font-semibold">Date</th>
                     <th className="px-4 py-3 font-semibold">Student Name</th>
-                    {dynamicHeaders.map(header => (
+                    {dynamicHeaders.map((header: any) => (
                       <th key={header} className="px-4 py-3 font-semibold">{header}</th>
                     ))}
                   </tr>
@@ -163,7 +163,7 @@ export default async function AdminReportsPage({
                       </td>
                     </tr>
                   ) : (
-                    reports.map(report => (
+                    reports.map((report: any) => (
                       <tr key={report.id} className="border-b hover:bg-stone-50 print:hover:bg-transparent">
                         <td className="px-4 py-3 whitespace-nowrap">
                           {report.submittedAt.toLocaleDateString()}
@@ -171,7 +171,7 @@ export default async function AdminReportsPage({
                         <td className="px-4 py-3">
                           {report.user.name || report.user.email}
                         </td>
-                        {dynamicHeaders.map(header => {
+                        {dynamicHeaders.map((header: any) => {
                           const val = (report.reportData as Record<string, any>)?.[header]
                           return (
                             <td key={header} className="px-4 py-3">
