@@ -69,7 +69,7 @@ export default async function DashboardPage() {
             activeEnrollments.map((enrollment: any) => {
               const challenge = enrollment.challenge;
               // Check if a report for THIS challenge was already submitted today
-              const isSubmittedToday = todaysReports.some(report => report.challengeId === challenge.id)
+              const isSubmittedToday = todaysReports.some((report: any) => report.challengeId === challenge.id)
 
               return (
                 <Card key={challenge.id} className="border-stone-200 shadow-sm bg-white">
