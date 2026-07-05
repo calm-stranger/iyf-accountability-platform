@@ -70,11 +70,11 @@ export default async function AdminReportsPage({
       {/* Print Only Header */}
       <div className="hidden print:block mb-6">
         <h1 className="text-2xl font-bold text-center">
-          {challengeId ? challenges.find(c => c.id === challengeId)?.title : 'Challenge Reports'}
+          {challengeId ? challenges.find((c: any) => c.id === challengeId)?.title : 'Challenge Reports'}
         </h1>
         {userId && (
           <h2 className="text-lg text-center mt-2">
-            Student: {users.find(u => u.id === userId)?.name || 'Unknown'}
+            Student: {users.find((u: any) => u.id === userId)?.name || 'Unknown'}
           </h2>
         )}
       </div>
