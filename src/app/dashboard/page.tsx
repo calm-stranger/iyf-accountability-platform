@@ -66,7 +66,7 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
           ) : (
-            activeEnrollments.map((enrollment) => {
+            activeEnrollments.map((enrollment: any) => {
               const challenge = enrollment.challenge;
               // Check if a report for THIS challenge was already submitted today
               const isSubmittedToday = todaysReports.some(report => report.challengeId === challenge.id)

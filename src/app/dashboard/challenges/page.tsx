@@ -23,7 +23,7 @@ export default async function StudentChallengesPage() {
 
   // Helper function to check the status of a specific challenge
   const getRequestStatus = (challengeId: string) => {
-    const request = userRequests.find(req => req.challengeId === challengeId)
+    const request = userRequests.find((req: any) => req.challengeId === challengeId)
     return request ? request.status : null // Returns 'PENDING', 'ACCEPTED', 'REJECTED', or null
   }
 
@@ -41,7 +41,7 @@ export default async function StudentChallengesPage() {
         {activeChallenges.length === 0 ? (
           <p className="text-stone-500 italic">No active challenges right now. Check back soon!</p>
         ) : (
-          activeChallenges.map((challenge) => {
+          activeChallenges.map((challenge: any) => {
             const status = getRequestStatus(challenge.id)
 
             return (

@@ -28,7 +28,7 @@ export default async function AdminRequestsPage() {
             No pending requests at the moment.
           </p>
         ) : (
-          pendingRequests.map((req) => (
+          pendingRequests.map((req: any) => (
             <Card key={req.id} className="border-stone-200 shadow-sm bg-white">
               <CardHeader className="pb-2 border-b border-stone-100">
                 <CardTitle className="text-lg text-stone-800">
